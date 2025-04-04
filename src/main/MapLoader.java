@@ -22,13 +22,12 @@ public class MapLoader {
     }
 
     public static void loadMap(String[] tileMap, HashSet<GameObject> walls, HashSet<GameObject> pellet, HashSet<GameObject> ghosts, GameObject pacman) {
-        int tileSize = 20;
         for (int row = 0; row < tileMap.length; row++) {
             String line = tileMap[row];
             for (int col = 0; col < line.length(); col++) {
                 char tileMapChar = line.charAt(col);
-                int x = col * tileSize;
-                int y = row * tileSize;
+                int x = col * GameObject.tileSize;
+                int y = row * GameObject.tileSize;
 
                 if (tileMapChar == 'X') { // Wall block
                     System.out.printf("Wall: x: %d, y: %d%n", x, y);
@@ -38,7 +37,7 @@ public class MapLoader {
                     pellet.add(new Pellet(x, y));
                 } else if (tileMapChar == 'b') { // Wall block
                     System.out.printf("Ghost1: x: %d, y: %d%n", x, y);
-                    ghosts.add(new Ghost("scareGhost.png", x, y));
+                    ghosts.add(new Ghost("blueGhost.png", x, y));
                 } else if (tileMapChar == 'o') { // Wall block
                     System.out.printf("Ghost2: x: %d, y: %d%n", x, y);
                     ghosts.add(new Ghost("orangeGhost.png",x, y));

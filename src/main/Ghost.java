@@ -4,7 +4,7 @@ import java.awt.*;
 public class Ghost extends GameObject {
 
     public Ghost(String imageName, int x, int y) {
-        super(imageName, x, y, 20, 20); // Truyền đúng tham số cho GameObject
+        super(imageName, x, y, tileSize, tileSize); // Truyền đúng tham số cho GameObject
     }
 
     @Override

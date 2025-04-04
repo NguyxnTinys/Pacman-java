@@ -11,7 +11,6 @@ public class Main {
         int boardHeight = rowCount * tileSize;
 
         JFrame frame = new JFrame("Pac Man");
-        // frame.setVisible(true);
         frame.setSize(boardWidth, boardHeight);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
@@ -20,7 +19,9 @@ public class Main {
         GamePanel gamePanel = new GamePanel();
         frame.add(gamePanel);
         frame.pack();
-        gamePanel.requestFocus();
-        frame.setVisible(true);
+        frame.setVisible(true);                 
+
+        gamePanel.requestFocusInWindow();      
+        gamePanel.startGame();                    
     }
 }

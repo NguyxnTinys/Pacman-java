@@ -3,6 +3,8 @@ import java.awt.*;
 import javax.swing.ImageIcon;
 
 public abstract class GameObject {
+    public static int tileSize = 40;
+    public static int gap = GamePanel.gap;
     protected int x, y, width, height;
     protected int startX, startY;
     protected Image image;
@@ -19,7 +21,7 @@ public abstract class GameObject {
     }
 
     public void loadImage(String imageName) {
-        String path = "src/res/images/" + imageName;
+        String path = "/res/images/" + imageName;
         try {
             image = new ImageIcon(getClass().getResource(path)).getImage();
             if (image == null) {
@@ -47,5 +49,9 @@ public abstract class GameObject {
         if (image != null) {
             g.drawImage(image, x, y, width, height, null);
         }
+    }
+    // Phương thức getBounds để lấy bounding box của đối tượng
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, width, height);
     }
 }
