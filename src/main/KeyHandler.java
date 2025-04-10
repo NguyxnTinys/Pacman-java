@@ -8,6 +8,9 @@ public class KeyHandler implements KeyListener {
     private Pacman pacman;
     private CollisionManager collisionManager;
 
+    private int desiredDx = 0;
+    private int desiredDy = 0;
+
     public KeyHandler(Pacman pacman, CollisionManager collisionManager) {
         this.pacman = pacman;
         this.collisionManager = collisionManager;
@@ -20,66 +23,40 @@ public class KeyHandler implements KeyListener {
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
 
-        // Kiểm tra hướng mới
         if (keyCode == KeyEvent.VK_UP) {
-            // Nếu Pacman đang di chuyển ngang, kiểm tra xem có thể đi lên không
-            if (pacman.getDx() != 0) {
-                int nextX = pacman.getX() + pacman.getDx() * pacman.getSpeed();
-                int nextY = pacman.getY() - pacman.getSpeed();
-                if (collisionManager.canMove(new Rectangle(nextX, nextY, pacman.getWidth(), pacman.getHeight()))) {
-                    pacman.moveUp(); // Nếu không có tường, chuyển hướng lên
-                }
-            } else {
-                pacman.moveUp(); // Nếu đang di chuyển lên, không cần kiểm tra thêm
-            }
-        }
-        if (keyCode == KeyEvent.VK_RIGHT) {
-            // Nếu Pacman đang di chuyển dọc, kiểm tra xem có thể đi phải không
-            if (pacman.getDy() != 0) {
-                int nextX = pacman.getX() + pacman.getSpeed();
-                int nextY = pacman.getY() + pacman.getDy() * pacman.getSpeed();
-                if (collisionManager.canMove(new Rectangle(nextX, nextY, pacman.getWidth(), pacman.getHeight()))) {
-                    pacman.moveRight(); // Nếu không có tường, chuyển hướng phải
-                }
-            } else {
-                pacman.moveRight(); // Nếu đang di chuyển phải, không cần kiểm tra thêm
-            }
-        }
-        if (keyCode == KeyEvent.VK_DOWN) {
-            // Nếu Pacman đang di chuyển ngang, kiểm tra xem có thể đi xuống không
-            if (pacman.getDx() != 0) {
-                int nextX = pacman.getX() + pacman.getDx() * pacman.getSpeed();
-                int nextY = pacman.getY() + pacman.getSpeed();
-                if (collisionManager.canMove(new Rectangle(nextX, nextY, pacman.getWidth(), pacman.getHeight()))) {
-                    pacman.moveDown(); // Nếu không có tường, chuyển hướng xuống
-                }
-            } else {
-                pacman.moveDown(); // Nếu đang di chuyển xuống, không cần kiểm tra thêm
-            }
-        }
-        if (keyCode == KeyEvent.VK_LEFT) {
-            // Nếu Pacman đang di chuyển dọc, kiểm tra xem có thể đi trái không
-            if (pacman.getDy() != 0) {
-                int nextX = pacman.getX() - pacman.getSpeed();
-                int nextY = pacman.getY() + pacman.getDy() * pacman.getSpeed();
-                if (collisionManager.canMove(new Rectangle(nextX, nextY, pacman.getWidth(), pacman.getHeight()))) {
-                    pacman.moveLeft(); // Nếu không có tường, chuyển hướng trái
-                }
-            } else {
-                pacman.moveLeft(); // Nếu đang di chuyển trái, không cần kiểm tra thêm
-            }
+            desiredDx = 0;
+            desiredDy = -1;
+        } else if (keyCode == KeyEvent.VK_DOWN) {
+            desiredDx = 0;
+            desiredDy = 1;
+        } else if (keyCode == KeyEvent.VK_LEFT) {
+            desiredDx = -1;
+            desiredDy = 0;
+        } else if (keyCode == KeyEvent.VK_RIGHT) {
+            desiredDx = 1;
+            desiredDy = 0;
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        int keyCode = e.getKeyCode();
+        // Không cần xử lý gì trong trường hợp này nếu không muốn dừng Pacman khi thả phím
+    }
 
-        if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN) {
-            pacman.stopMoving();
-        }
-        if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT) {
-            pacman.stopMoving();
+    public void update() {
+        // Nếu người chơi chưa nhấn hướng nào thì không làm gì
+        if (desiredDx == 0 && desiredDy == 0) return;
+
+        int nextX = pacman.getX() + desiredDx * pacman.getSpeed();
+        int nextY = pacman.getY() + desiredDy * pacman.getSpeed();
+
+        Rectangle nextRect = new Rectangle(nextX, nextY, pacman.getWidth(), pacman.getHeight());
+
+        if (collisionManager.canMove(nextRect)) {
+            if (desiredDx == -1) pacman.moveLeft();
+            else if (desiredDx == 1) pacman.moveRight();
+            else if (desiredDy == -1) pacman.moveUp();
+            else if (desiredDy == 1) pacman.moveDown();
         }
     }
 }

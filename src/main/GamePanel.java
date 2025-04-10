@@ -16,7 +16,8 @@ public class GamePanel extends JPanel implements ActionListener {
     private int colCount = 21;
     private int rowCount = 19;
     private int boardWidth = colCount * (tileSize + gap); 
-private int boardHeight = rowCount * (tileSize + gap);
+    private int boardHeight = rowCount * (tileSize + gap);
+    private int mapIdx = 1;
 
     private Timer timer;
     private Pacman pacman;
@@ -25,6 +26,8 @@ private int boardHeight = rowCount * (tileSize + gap);
     private HashSet<GameObject> pellets;
 
     private CollisionManager collisionManager;
+
+    private KeyHandler keyHandler;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(boardWidth, boardHeight));
@@ -41,12 +44,14 @@ private int boardHeight = rowCount * (tileSize + gap);
         pacman = new Pacman(50, 50, collisionManager);
 
         // Load bản đồ từ file
-        String[] tileMap = MapLoader.loadTileMap("src/res/maps/map1.txt");
+        String[] tileMap = MapLoader.loadTileMap("src/res/maps/map" + mapIdx + ".txt");
         MapLoader.loadMap(tileMap, walls, pellets, ghosts, pacman);
 
         // Timer cập nhật game loop
         timer = new Timer(1000 / 60, this);
-        addKeyListener(new KeyHandler(pacman, collisionManager));
+        // TRONG constructor GamePanel() → sửa phần addKeyListener:
+        keyHandler = new KeyHandler(pacman, collisionManager);
+        addKeyListener(keyHandler);
         requestFocusInWindow();  // Đảm bảo nhận sự kiện bàn phím
     }
 
@@ -70,8 +75,26 @@ private int boardHeight = rowCount * (tileSize + gap);
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        keyHandler.update();
         pacman.update();
         for (GameObject ghost : ghosts) ghost.update();
+
+        // Kiểm tra nếu ăn hết pellet thì win
+        if (pellets.isEmpty()) {
+            timer.stop(); // Dừng game loop tạm thời
+            mapIdx++; // Chuyển sang map tiếp theo
+
+            JOptionPane.showMessageDialog(this, "You Win! Loading next map...");
+            
+            // XÓA dữ liệu map cũ
+            walls.clear();
+            pellets.clear();
+            ghosts.clear();
+
+            String[] tileMap = MapLoader.loadTileMap("src/res/maps/map" + mapIdx + ".txt");
+            MapLoader.loadMap(tileMap, walls, pellets, ghosts, pacman);
+            startGame();
+        }
         repaint();
     }
 }
